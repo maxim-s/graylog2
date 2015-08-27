@@ -1,0 +1,67 @@
+---
+- name: Prepare enviropment
+  sudo: yes
+  hosts: localhost
+  tasks:
+  - name: Check pip
+    command: pip
+    register: pip_is_installed
+  - name: Install pip
+    command: python get-pip.py
+    when: pip_is_installed.rc !=0
+  - name: Check docker-py
+    ignore_errors: True
+    command: pip show docker-py
+    register: docker_py_is_installed
+  - name: Install docker-py
+    pip: name=docker-py version=1.2.3
+    when: docker_py_is_installed.rc != 0
+- name: Get host IP
+  sudo: yes
+  hosts: localhost
+  tasks:
+  - name: Resolving IP
+    debug: msg="System {{ ansible_eth0.ipv4.address }}"
+- name: Install elastic search
+  hosts: localhost
+  sudo: yes  
+  tasks:  
+  - name: run elastic search container  
+    docker:     
+      name: elasticsearch 
+      image: elasticsearch
+      state: started
+      ports:
+      - "9200:9200"
+      - "9300:9300"
+      volumes:
+      - "/tmp:/data/es"
+- name: mongodb
+  hosts: localhost
+  sudo: yes
+  tasks:
+  - name: Run mongodb container   
+    docker:      
+      image: mongo
+      state: restarted
+      ports:
+      - "27017:27017"      
+      volumes:
+      - "/tmp:/data/db"
+- name: graylog2
+  hosts: localhost
+  sudo: yes
+  tasks:    
+  - name: Run graylog2 container 
+    docker:      
+      image: maxim-s/graylog2
+      state: restarted      
+      env:
+          IP_A: "{{ ansible_eth0.ipv4.address }}"
+      ports:
+      - "9000:9000"
+      - "12201:12201"      
+      - "12900:12900"
+      volumes:
+      - "/logs"
+      - "/tmp:/opt/graylog2-server/log"
