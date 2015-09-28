@@ -57,7 +57,8 @@
       image: maxim-s/graylog2
       state: restarted      
       env:
-          IP_A: "{{ ansible_eth0.ipv4.address }}"
+          ES_HOST: "{{ ansible_eth0.ipv4.address }}"
+          MD_HOST: "{{ ansible_eth0.ipv4.address }}"
       ports:
       - "9000:9000"
       - "12201:12201"      

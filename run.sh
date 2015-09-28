@@ -1,9 +1,9 @@
 #!/bin/bash
 echo "start"
 set -e
-sed -i -e "s/mongodb_host =.*$/mongodb_host = ${IP_A}/" /etc/graylog/server/server.conf
-sed -i -e "s/elasticsearch_network_host =.*$/elasticsearch_network_host = ${IP_A}:9300/" /etc/graylog/server/server.conf
-sed -i -e "s/elasticsearch_discovery_zen_ping_unicast_hosts =.*$/elasticsearch_discovery_zen_ping_unicast_hosts = ${IP_A}:9300/" /etc/graylog/server/server.conf
+sed -i -e "s/mongodb_host =.*$/mongodb_host = ${MD_HOST}/" /etc/graylog/server/server.conf
+sed -i -e "s/elasticsearch_network_host =.*$/elasticsearch_network_host = ${ES_HOST}:9300/" /etc/graylog/server/server.conf
+sed -i -e "s/elasticsearch_discovery_zen_ping_unicast_hosts =.*$/elasticsearch_discovery_zen_ping_unicast_hosts = ${ES_HOST}:9300/" /etc/graylog/server/server.conf
 # Services starter for graylog2
 cd /opt/
 # Start graylog2 server
