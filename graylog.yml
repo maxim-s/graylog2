@@ -16,12 +16,12 @@
   - name: Install docker-py
     pip: name=docker-py version=1.2.3
     when: docker_py_is_installed.rc != 0
-- name: Get host IP
+- name: Create directory
   sudo: yes
   hosts: localhost
   tasks:
-  - name: Resolving IP
-    debug: msg="System {{ ansible_eth0.ipv4.address }}"
+  - name: Creates directory
+    file: path=/data/graylog state=directory
 - name: Install elastic search
   hosts: localhost
   sudo: yes  
@@ -35,7 +35,7 @@
       - "9200:9200"
       - "9300:9300"
       volumes:
-      - "/tmp:/data/es"
+      - "/data/graylog:/usr/share/elasticsearch/data"
 - name: mongodb
   hosts: localhost
   sudo: yes
@@ -43,11 +43,11 @@
   - name: Run mongodb container   
     docker:      
       image: mongo
-      state: restarted
+      state: started
       ports:
       - "27017:27017"      
       volumes:
-      - "/tmp:/data/db"
+      - "/data/graylog:/data/db"
 - name: graylog2
   hosts: localhost
   sudo: yes
@@ -57,12 +57,13 @@
       image: maxim-s/graylog2
       state: restarted      
       env:
-          ES_HOST: "{{ ansible_eth0.ipv4.address }}"
+          ES_CLUSTER_HOSTS: "{{ ansible_eth0.ipv4.address }}:9300"
+          ES_CLUSTER_NAME: "elasticsearch"
           MD_HOST: "{{ ansible_eth0.ipv4.address }}"
       ports:
       - "9000:9000"
       - "12201:12201"      
       - "12900:12900"
       volumes:
-      - "/logs"
-      - "/tmp:/opt/graylog2-server/log"
+      - "/data/graylog:/var/log/graylog"
+      - "/data/graylog:/opt/graylog2-server/log"

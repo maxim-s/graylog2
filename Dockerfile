@@ -14,10 +14,10 @@ RUN tar -xf "$GRAYLOG_SERVER.tgz" && rm "$GRAYLOG_SERVER.tgz"
 RUN tar -xf "$GRAYLOG_WEB.tgz" && rm "$GRAYLOG_WEB.tgz"
 RUN mv "$GRAYLOG_SERVER" /opt/graylog2-server 
 RUN mv "$GRAYLOG_WEB" /opt/graylog2-web-interface 
-RUN useradd -s /bin/false -r -M graylog2 
-RUN chown -R graylog2:root /opt 
+RUN useradd -s /bin/false -r -M graylog2
+RUN chown -R graylog2:root /opt
 RUN mkdir -p /var/log/graylog
-RUN chown -R graylog2:root /var/log/graylog
+RUN chown -R graylog2:root /var
 # Copy config
 COPY ./graylog.conf /etc/graylog/server/server.conf
 RUN chown -R graylog2:root /etc/graylog/server
@@ -27,7 +27,7 @@ RUN sed -i -e "s/graylog2-server.uris=.*$/graylog2-server.uris=\"http:\/\/127.0.
 
 EXPOSE 9000 12201 12900
 VOLUME ["/var/log/graylog"]
-VOLUME ["/opt/graylog2-server/log"]
+VOLUME ["/opt/graylog2-server/log"] 
 COPY ./run.sh /opt/run.sh
 RUN chmod a+x /opt/run.sh
 USER graylog2
